@@ -8,6 +8,7 @@ import '../services/offline_repository.dart';
 import '../services/sync_service.dart';
 import '../services/link_option_service.dart';
 import '../services/meta_service.dart';
+import 'widgets/fields/field_factory.dart';
 import 'widgets/form_builder.dart';
 import 'sync_status_screen.dart';
 
@@ -27,6 +28,9 @@ class FormScreen extends StatefulWidget {
 
   /// When set, new documents created from this screen will include mobile_uuid on the server.
   final Future<String?> Function()? getMobileUuid;
+
+  /// Optional custom field factory for rendering custom field types.
+  final FieldFactory? customFieldFactory;
 
   /// Optional form style (overrides the default style used by FrappeFormBuilder).
   final FrappeFormStyle? style;
@@ -49,6 +53,7 @@ class FormScreen extends StatefulWidget {
     this.api,
     this.onSaveSuccess,
     this.getMobileUuid,
+    this.customFieldFactory,
     this.style,
     this.readOnly = false,
     this.canSave,
@@ -467,6 +472,7 @@ class _FormScreenState extends State<FormScreen> {
               initialData: widget.document?.data,
               onSubmit: _handleSubmit,
               readOnly: _isSaving || widget.readOnly,
+              customFieldFactory: widget.customFieldFactory,
               linkOptionService: widget.linkOptionService,
               uploadFile: widget.api != null
                   ? (file) async {
