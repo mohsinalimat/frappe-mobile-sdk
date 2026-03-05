@@ -104,15 +104,8 @@ class DocField {
           parseBool(json['in_list_view']) || parseBool(json['inListView']),
       allowMultiple:
           parseBool(json['allow_multiple']) ||
-          parseBool(json['allowMultiple']) ||
-          _isMultiSelectFieldType(json['fieldtype'] as String?),
+          parseBool(json['allowMultiple']),
     );
-  }
-
-  static bool _isMultiSelectFieldType(String? fieldtype) {
-    if (fieldtype == null) return false;
-    final t = fieldtype.toLowerCase().replaceAll(' ', '');
-    return t == 'tablemultiselect' || t == 'multiselect';
   }
 
   Map<String, dynamic> toJson() {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../api/client.dart';
 import '../api/exceptions.dart';
 import '../api/utils.dart';
+import '../constants/field_types.dart';
 import '../models/doc_type_meta.dart';
 import '../models/document.dart';
 import '../services/offline_repository.dart';
@@ -89,11 +90,14 @@ class _FormScreenState extends State<FormScreen> {
   }
 
   Future<void> _handleSubmit(Map<String, dynamic> formData) async {
-    // Normalize multi-select: Frappe expects comma-separated string
     final payload = Map<String, dynamic>.from(formData);
     for (final f in widget.meta.fields) {
       final name = f.fieldname;
-      if (f.allowMultiple && name != null && payload[name] is List) {
+      if (name == null) continue;
+      // Table MultiSelect emits List<Map> (child table rows) — pass through as-is
+      if (f.fieldtype == FieldTypes.tableMultiSelect) continue;
+      // Other multi-select fields: Frappe expects comma-separated string
+      if (f.allowMultiple && payload[name] is List) {
         payload[name] = (payload[name] as List)
             .map((e) => e.toString())
             .join(',');
