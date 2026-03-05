@@ -65,6 +65,7 @@ export 'src/ui/widgets/fields/base_field.dart'; // Exports FieldStyle
 export 'src/ui/widgets/fields/data_field.dart';
 export 'src/ui/widgets/fields/text_field.dart';
 export 'src/ui/widgets/fields/select_field.dart';
+export 'src/ui/widgets/fields/table_multi_select_field.dart';
 export 'src/ui/widgets/fields/date_field.dart';
 export 'src/ui/widgets/fields/check_field.dart';
 export 'src/ui/widgets/fields/numeric_field.dart';
