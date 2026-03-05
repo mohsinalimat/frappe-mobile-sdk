@@ -20,6 +20,7 @@ import 'rating_field.dart';
 import 'read_only_field.dart';
 import 'attach_field.dart';
 import 'image_field.dart';
+import 'table_multi_select_field.dart';
 import 'child_table_field.dart';
 import '../../../models/doc_type_meta.dart';
 
@@ -96,7 +97,6 @@ class FieldFactory {
         );
 
       case FieldTypes.select:
-      case 'Table MultiSelect':
       case 'Multi Select':
         return SelectField(
           field: field,
@@ -104,6 +104,26 @@ class FieldFactory {
           onChanged: onChanged,
           enabled: enabled,
           style: fieldStyle,
+        );
+
+      case FieldTypes.tableMultiSelect:
+        if (getMeta == null || linkOptionService == null) {
+          return SelectField(
+            field: field,
+            value: value,
+            onChanged: onChanged,
+            enabled: enabled,
+            style: fieldStyle,
+          );
+        }
+        return TableMultiSelectField(
+          field: field,
+          value: value,
+          onChanged: onChanged,
+          enabled: enabled,
+          style: fieldStyle,
+          getMeta: getMeta,
+          linkOptionService: linkOptionService!,
         );
 
       case FieldTypes.date:
