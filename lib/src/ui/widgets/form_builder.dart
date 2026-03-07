@@ -81,6 +81,10 @@ class FrappeFormBuilder extends StatefulWidget {
   /// Called once with the form's submit handler so the parent (e.g. FormScreen) can trigger save from AppBar.
   final void Function(void Function() submit)? registerSubmit;
 
+  /// When true, Tab Breaks are rendered as vertical ExpansionTile accordions
+  /// instead of a horizontal TabBar. First section is expanded by default.
+  final bool accordionSections;
+
   const FrappeFormBuilder({
     super.key,
     required this.meta,
@@ -96,6 +100,7 @@ class FrappeFormBuilder extends StatefulWidget {
     this.fetchLinkedDocument,
     this.getMeta,
     this.registerSubmit,
+    this.accordionSections = false,
   });
 
   @override
@@ -628,6 +633,39 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
     widget.onSubmit?.call(completeFormData);
   }
 
+  Widget _buildAccordionContent() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: _tabs.asMap().entries.map((entry) {
+          final index = entry.key;
+          final tab = entry.value;
+          return ExpansionTile(
+            initiallyExpanded: index == 0,
+            title: Text(
+              tab.tabField.displayLabel,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: tab.sections
+                      .map((section) => _buildSection(section))
+                      .toList(),
+                ),
+              ),
+            ],
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_tabs.isEmpty) {
@@ -639,7 +677,7 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
       key: _formKey,
       child: Column(
         children: [
-          if (_tabs.length > 1)
+          if (!widget.accordionSections && _tabs.length > 1)
             TabBar(
               controller: _tabController,
               tabs: _tabs
@@ -647,14 +685,16 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
                   .toList(),
             ),
           Expanded(
-            child: _tabs.length > 1
-                ? TabBarView(
-                    controller: _tabController,
-                    children: _tabs
-                        .map((tab) => _buildTabContent(tab))
-                        .toList(),
-                  )
-                : _buildTabContent(_tabs.first),
+            child: widget.accordionSections
+                ? _buildAccordionContent()
+                : _tabs.length > 1
+                    ? TabBarView(
+                        controller: _tabController,
+                        children: _tabs
+                            .map((tab) => _buildTabContent(tab))
+                            .toList(),
+                      )
+                    : _buildTabContent(_tabs.first),
           ),
         ],
       ),
