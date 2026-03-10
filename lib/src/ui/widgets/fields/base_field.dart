@@ -42,16 +42,18 @@ abstract class BaseField extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 8.0),
             child: Row(
               children: [
-                Text(
-                  field.displayLabel,
-                  style:
-                      style?.labelStyle ??
-                      TextStyle(
-                        fontWeight: field.reqd
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                        fontSize: 14,
-                      ),
+                Flexible(
+                  child: Text(
+                    field.displayLabel,
+                    style:
+                        style?.labelStyle ??
+                        TextStyle(
+                          fontWeight: field.reqd
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                          fontSize: 14,
+                        ),
+                  ),
                 ),
                 if (field.reqd)
                   const Padding(
