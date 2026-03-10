@@ -43,8 +43,11 @@ class LinkOptionService {
 
     List<dynamic> documents;
     try {
+      // Request all fields so we can find a display label
+      // (e.g. geography_name, title, full_name) beyond just `name`.
       documents = await _client.doctype.list(
         doctype,
+        fields: const ['*'],
         filters: normalizedFilters,
         limitPageLength: 1000,
       );
@@ -61,6 +64,7 @@ class LinkOptionService {
       final name = docMap['name'] as String? ?? '';
       if (name.isEmpty) continue;
       String? label;
+      // Check well-known label fields first
       for (final k in [
         'title',
         'full_name',
@@ -71,6 +75,20 @@ class LinkOptionService {
         if (docMap.containsKey(k) && docMap[k] != null) {
           label = docMap[k].toString();
           break;
+        }
+      }
+      // Fallback: use any string field ending in _name (e.g. geography_name)
+      // that differs from the primary key
+      if (label == null || label == name) {
+        for (final entry in docMap.entries) {
+          if (entry.key == 'name' || entry.key == 'doctype') continue;
+          if (entry.key.endsWith('_name') &&
+              entry.value is String &&
+              (entry.value as String).isNotEmpty &&
+              entry.value != name) {
+            label = entry.value as String;
+            break;
+          }
         }
       }
       label ??= name;
@@ -143,6 +161,7 @@ class LinkOptionService {
   /// Parse Frappe link_filters and build API filters.
   /// Frappe format: [["District","state","=","eval:doc.state"]]
   /// API get_list accepts: [["DocType", "field", "operator", value]] (4 elements).
+  /// Returns null if ANY eval:doc dependency is unresolved (missing from formData).
   static List<List<dynamic>>? parseLinkFilters(
     String? linkFiltersJson,
     Map<String, dynamic> formData,
@@ -160,7 +179,12 @@ class LinkOptionService {
         if (value is String && value.startsWith('eval:doc.')) {
           final fieldName = value.substring(9).trim();
           value = formData[fieldName];
-          if (value == null || value == '') continue;
+          if (value == null || value == '') {
+            // A required dependency is missing — return null so the
+            // Link field shows "Select <parent> first" instead of
+            // loading a partial (unfiltered) list.
+            return null;
+          }
         }
         result.add([filter[0], filter[1], filter[2], value]);
       }
