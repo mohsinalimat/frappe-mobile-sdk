@@ -289,24 +289,16 @@ class _ChildTableSheetState extends State<_ChildTableSheet> {
           ),
           const Divider(height: 1),
           Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.zero,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height,
-                ),
-                child: widget.formBuilder(
-                  widget.childMeta,
-                  widget.initialData,
-                  (data) => widget.onSubmit(data),
-                  registerSubmit: (fn) {
-                    _submitFn = fn;
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (mounted) setState(() {});
-                    });
-                  },
-                ),
-              ),
+            child: widget.formBuilder(
+              widget.childMeta,
+              widget.initialData,
+              (data) => widget.onSubmit(data),
+              registerSubmit: (fn) {
+                _submitFn = fn;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) setState(() {});
+                });
+              },
             ),
           ),
           const Divider(height: 1),
