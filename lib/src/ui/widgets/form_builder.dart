@@ -423,6 +423,9 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
                   imageHeaders: widget.imageHeaders,
                   fetchLinkedDocument: widget.fetchLinkedDocument,
                   onButtonPressed: widget.onButtonPressed,
+                  style: widget.style,
+                  customFieldFactory: widget.customFieldFactory,
+                  linkOptionService: widget.linkOptionService,
                 )
           : null,
       onButtonPressed: widget.onButtonPressed,
