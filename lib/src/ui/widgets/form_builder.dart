@@ -365,6 +365,7 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
       return const SizedBox.shrink();
     }
 
+    debugPrint('[FB] field=${field.fieldname} type=${field.fieldtype} styleType=${widget.style?.runtimeType}');
     final formStyle = widget.style ?? DefaultFormStyle.standard;
     final fieldStyle = FieldStyle(
       labelStyle: formStyle.labelStyle,
