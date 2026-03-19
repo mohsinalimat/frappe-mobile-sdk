@@ -444,8 +444,18 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
 
           // Sync FormBuilder internal state (needed for programmatic updates e.g. auto-select)
           if (field.fieldname != null && oldValue != value) {
+            // Date/Datetime fields: onChanged emits an ISO String, but
+            // FormBuilderDateTimePicker.didChange expects DateTime?.
+            // Parse back to DateTime so patchValue doesn't throw a TypeError
+            // that prevents the text field from being populated.
+            dynamic patchVal = value ?? '';
+            if (value is String &&
+                (field.fieldtype == 'Date' ||
+                    field.fieldtype == 'Datetime')) {
+              patchVal = DateTime.tryParse(value);
+            }
             _formKey.currentState?.patchValue({
-              field.fieldname!: value ?? '',
+              field.fieldname!: patchVal,
             });
           }
 
