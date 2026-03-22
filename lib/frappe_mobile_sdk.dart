@@ -72,6 +72,7 @@ export 'src/ui/widgets/fields/button_field.dart';
 export 'src/ui/widgets/fields/numeric_field.dart';
 export 'src/ui/widgets/fields/link_field.dart';
 export 'src/ui/widgets/fields/phone_field.dart';
+export 'src/ui/widgets/fields/multi_image_field.dart';
 
 // Constants
 export 'src/constants/field_types.dart';
