@@ -153,24 +153,24 @@ class DependsOnEvaluator {
       case '!=':
         return actual != expected;
       case '>':
-        if (actual is num && expected is num) {
-          return actual > expected;
-        }
+        final gtA = actual is num ? actual : num.tryParse(actual?.toString() ?? '');
+        final gtE = expected is num ? expected : num.tryParse(expected?.toString() ?? '');
+        if (gtA != null && gtE != null) return gtA > gtE;
         return false;
       case '<':
-        if (actual is num && expected is num) {
-          return actual < expected;
-        }
+        final ltA = actual is num ? actual : num.tryParse(actual?.toString() ?? '');
+        final ltE = expected is num ? expected : num.tryParse(expected?.toString() ?? '');
+        if (ltA != null && ltE != null) return ltA < ltE;
         return false;
       case '>=':
-        if (actual is num && expected is num) {
-          return actual >= expected;
-        }
+        final gteA = actual is num ? actual : num.tryParse(actual?.toString() ?? '');
+        final gteE = expected is num ? expected : num.tryParse(expected?.toString() ?? '');
+        if (gteA != null && gteE != null) return gteA >= gteE;
         return false;
       case '<=':
-        if (actual is num && expected is num) {
-          return actual <= expected;
-        }
+        final lteA = actual is num ? actual : num.tryParse(actual?.toString() ?? '');
+        final lteE = expected is num ? expected : num.tryParse(expected?.toString() ?? '');
+        if (lteA != null && lteE != null) return lteA <= lteE;
         return false;
       default:
         return false;
