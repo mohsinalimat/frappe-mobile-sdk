@@ -453,6 +453,12 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
                 (field.fieldtype == 'Date' ||
                     field.fieldtype == 'Datetime')) {
               patchVal = DateTime.tryParse(value);
+            } else if (value is num) {
+              // NumericField.onChanged emits an int/double, but
+              // FormBuilderTextField.patchValue expects String?.
+              // Convert to String to prevent TypeError inside setState
+              // that would abort the rebuild and break depends_on visibility.
+              patchVal = value.toString();
             }
             _formKey.currentState?.patchValue({
               field.fieldname!: patchVal,
