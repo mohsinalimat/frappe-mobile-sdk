@@ -14,6 +14,11 @@ class DependsOnEvaluator {
       expr = expr.substring(5).trim();
     }
 
+    // Normalize JavaScript strict equality/inequality to the double-operator form
+    // that the parser below understands. Handles both spaced (=== ) and
+    // unspaced (===) variants, e.g. Frappe depends_on: eval:doc.field === 'Other'.
+    expr = expr.replaceAll('!==', ' != ').replaceAll('===', ' == ');
+
     // Simple evaluation for common patterns
     // eval:doc.field == value
     // eval:doc.field != value
