@@ -8,6 +8,8 @@ import 'base_field.dart';
 
 /// Widget for Datetime field type
 class DatetimeField extends BaseField {
+  final String? Function(dynamic)? validator;
+
   const DatetimeField({
     super.key,
     required super.field,
@@ -15,6 +17,7 @@ class DatetimeField extends BaseField {
     super.onChanged,
     super.enabled,
     super.style,
+    this.validator,
   });
 
   @override
@@ -44,14 +47,7 @@ class DatetimeField extends BaseField {
             fillColor: field.readOnly ? Colors.grey[200] : null,
             suffixIcon: const Icon(Icons.access_time),
           ),
-      validator: field.reqd
-          ? (value) {
-              if (value == null) {
-                return '${field.displayLabel} is required';
-              }
-              return null;
-            }
-          : null,
+      validator: (value) => validator?.call(value),
       onChanged: (val) => onChanged?.call(val?.toIso8601String()),
     );
   }

@@ -11,6 +11,7 @@ import 'base_field.dart';
 /// When [uploadFile] is set, picks upload to server first and store file_url; otherwise stores local path.
 class AttachField extends BaseField {
   final Future<String?> Function(File file)? uploadFile;
+  final String? Function(dynamic)? validator;
 
   const AttachField({
     super.key,
@@ -20,6 +21,7 @@ class AttachField extends BaseField {
     super.enabled,
     super.style,
     this.uploadFile,
+    this.validator,
   });
 
   @override
@@ -31,14 +33,7 @@ class AttachField extends BaseField {
       name: field.fieldname ?? '',
       initialValue: filePath,
       enabled: enabled && !field.readOnly,
-      validator: field.reqd
-          ? (value) {
-              if (value == null || value.isEmpty) {
-                return '${field.displayLabel} is required';
-              }
-              return null;
-            }
-          : null,
+      validator: (value) => validator?.call(value),
       builder: (FormFieldState<String> fieldState) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -7,6 +7,8 @@ import 'base_field.dart';
 
 /// Widget for Password field type
 class PasswordField extends BaseField {
+  final String? Function(dynamic)? validator;
+
   const PasswordField({
     super.key,
     required super.field,
@@ -14,6 +16,7 @@ class PasswordField extends BaseField {
     super.onChanged,
     super.enabled,
     super.style,
+    this.validator,
   });
 
   @override
@@ -33,14 +36,7 @@ class PasswordField extends BaseField {
             fillColor: field.readOnly ? Colors.grey[200] : null,
             suffixIcon: const Icon(Icons.lock),
           ),
-      validator: field.reqd
-          ? (value) {
-              if (value == null || value.isEmpty) {
-                return '${field.displayLabel} is required';
-              }
-              return null;
-            }
-          : null,
+      validator: (value) => validator?.call(value),
       onChanged: (val) => onChanged?.call(val),
     );
   }

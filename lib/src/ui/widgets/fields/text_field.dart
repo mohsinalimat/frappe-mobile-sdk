@@ -4,6 +4,8 @@ import 'base_field.dart';
 
 /// Widget for Text, Long Text, and Small Text field types
 class TextFieldWidget extends BaseField {
+  final String? Function(dynamic)? validator;
+
   const TextFieldWidget({
     super.key,
     required super.field,
@@ -11,6 +13,7 @@ class TextFieldWidget extends BaseField {
     super.onChanged,
     super.enabled,
     super.style,
+    this.validator,
   });
 
   @override
@@ -36,14 +39,7 @@ class TextFieldWidget extends BaseField {
       maxLength: (field.length != null && field.length! > 0)
           ? field.length
           : null,
-      validator: field.reqd
-          ? (value) {
-              if (value == null || value.toString().isEmpty) {
-                return '${field.displayLabel} is required';
-              }
-              return null;
-            }
-          : null,
+      validator: (value) => validator?.call(value),
       onChanged: (val) => onChanged?.call(val),
     );
   }

@@ -16,6 +16,7 @@ class ImageField extends BaseField {
 
   /// Auth headers (e.g. from [FrappeClient.requestHeaders]) so private file URLs load.
   final Map<String, String>? imageHeaders;
+  final String? Function(dynamic)? validator;
 
   const ImageField({
     super.key,
@@ -27,6 +28,7 @@ class ImageField extends BaseField {
     this.uploadFile,
     this.fileUrlBase,
     this.imageHeaders,
+    this.validator,
   });
 
   /// Only Frappe server file paths or full URLs are treated as server URLs.
@@ -99,14 +101,7 @@ class ImageField extends BaseField {
       name: field.fieldname ?? '',
       initialValue: imagePath,
       enabled: enabled && !field.readOnly,
-      validator: field.reqd
-          ? (value) {
-              if (value == null || value.isEmpty) {
-                return '${field.displayLabel} is required';
-              }
-              return null;
-            }
-          : null,
+      validator: (value) => validator?.call(value),
       builder: (FormFieldState<String> fieldState) {
         final raw = fieldState.value ?? imagePath;
         final currentValue = raw?.toString().trim();

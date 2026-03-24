@@ -7,6 +7,8 @@ import 'base_field.dart';
 
 /// Widget for Duration field type (in seconds)
 class DurationField extends BaseField {
+  final String? Function(dynamic)? validator;
+
   const DurationField({
     super.key,
     required super.field,
@@ -14,6 +16,7 @@ class DurationField extends BaseField {
     super.onChanged,
     super.enabled,
     super.style,
+    this.validator,
   });
 
   String _formatDuration(int seconds) {
@@ -82,24 +85,7 @@ class DurationField extends BaseField {
             fillColor: field.readOnly ? Colors.grey[200] : null,
             helperText: 'Format: HH:MM:SS or seconds',
           ),
-      validator: field.reqd
-          ? (value) {
-              if (value == null || value.isEmpty) {
-                return '${field.displayLabel} is required';
-              }
-              if (_parseDuration(value) == null) {
-                return 'Invalid duration format';
-              }
-              return null;
-            }
-          : (value) {
-              if (value != null &&
-                  value.isNotEmpty &&
-                  _parseDuration(value) == null) {
-                return 'Invalid duration format';
-              }
-              return null;
-            },
+      validator: (value) => validator?.call(value),
       onChanged: (val) {
         final seconds = _parseDuration(val);
         onChanged?.call(seconds);

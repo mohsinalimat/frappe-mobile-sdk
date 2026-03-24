@@ -7,6 +7,8 @@ import 'base_field.dart';
 
 /// Widget for Rating field type
 class RatingField extends BaseField {
+  final String? Function(dynamic)? validator;
+
   const RatingField({
     super.key,
     required super.field,
@@ -14,6 +16,7 @@ class RatingField extends BaseField {
     super.onChanged,
     super.enabled,
     super.style,
+    this.validator,
   });
 
   @override
@@ -43,14 +46,7 @@ class RatingField extends BaseField {
       name: field.fieldname ?? '',
       initialValue: initialRating,
       enabled: enabled && !field.readOnly,
-      validator: field.reqd
-          ? (value) {
-              if (value == null) {
-                return '${field.displayLabel} is required';
-              }
-              return null;
-            }
-          : null,
+      validator: (value) => validator?.call(value),
       builder: (FormFieldState<int> fieldState) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

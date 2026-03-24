@@ -5,6 +5,8 @@ import 'base_field.dart';
 
 /// Widget for Date field type
 class DateField extends BaseField {
+  final String? Function(dynamic)? validator;
+
   const DateField({
     super.key,
     required super.field,
@@ -12,6 +14,7 @@ class DateField extends BaseField {
     super.onChanged,
     super.enabled,
     super.style,
+    this.validator,
   });
 
   @override
@@ -41,14 +44,7 @@ class DateField extends BaseField {
             fillColor: field.readOnly ? Colors.grey[200] : null,
             suffixIcon: const Icon(Icons.calendar_today),
           ),
-      validator: field.reqd
-          ? (value) {
-              if (value == null) {
-                return '${field.displayLabel} is required';
-              }
-              return null;
-            }
-          : null,
+      validator: (value) => validator?.call(value),
       onChanged: (val) => onChanged?.call(val?.toIso8601String()),
     );
   }
