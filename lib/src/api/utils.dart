@@ -36,7 +36,11 @@ String extractErrorMessage(dynamic body) {
   }
 
   if (raw == null && body.containsKey('exception')) {
-    raw = body['exception'].toString();
+    var exc = body['exception'].toString();
+    // Strip traceback — keep only the first line (before '\nTraceback')
+    final tbIdx = exc.indexOf('\nTraceback');
+    if (tbIdx >= 0) exc = exc.substring(0, tbIdx);
+    raw = exc.trim();
   }
   if (raw == null && body.containsKey('message')) {
     raw = body['message'].toString();

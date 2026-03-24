@@ -4,6 +4,8 @@ import 'base_field.dart';
 
 /// Widget for Check (Boolean) field type
 class CheckField extends BaseField {
+  final String? Function(dynamic)? validator;
+
   const CheckField({
     super.key,
     required super.field,
@@ -11,6 +13,7 @@ class CheckField extends BaseField {
     super.onChanged,
     super.enabled,
     super.style,
+    this.validator,
   });
 
   @override
@@ -36,6 +39,7 @@ class CheckField extends BaseField {
       initialValue: initialValue,
       enabled: enabled && !field.readOnly,
       title: Text(field.placeholder ?? field.displayLabel),
+      validator: validator != null ? (val) => validator!(val) : null,
       onChanged: (val) {
         if (val != null) {
           onChanged?.call(val ? 1 : 0);

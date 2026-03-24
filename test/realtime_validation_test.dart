@@ -30,7 +30,7 @@ void main() {
         ),
       ));
 
-      await tester.enterText(find.byType(TextFormField).first, 'bad');
+      await tester.enterText(find.byType(TextField).first, 'bad');
       await tester.pumpAndSettle();
 
       expect(capturedField, 'city');
@@ -58,9 +58,9 @@ void main() {
       ));
 
       // Interact then clear the field to trigger onUserInteraction
-      await tester.enterText(find.byType(TextFormField).first, 'x');
+      await tester.enterText(find.byType(TextField).first, 'x');
       await tester.pump();
-      await tester.enterText(find.byType(TextFormField).first, '');
+      await tester.enterText(find.byType(TextField).first, '');
       await tester.pump();
 
       expect(find.text('Name is required'), findsOneWidget);
@@ -122,7 +122,7 @@ void main() {
       ));
 
       // Type in field B; formData snapshot must include field A's value
-      await tester.enterText(find.byType(TextFormField).last, 'world');
+      await tester.enterText(find.byType(TextField).last, 'world');
       await tester.pump();
 
       expect(receivedFormData, isNotNull);

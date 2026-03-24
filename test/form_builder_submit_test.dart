@@ -42,7 +42,7 @@ void main() {
       expect(submitted, isNull);
 
       // Enter a value and submit again.
-      await tester.enterText(find.byType(TextFormField).first, 'John');
+      await tester.enterText(find.byType(TextField).first, 'John');
       submitFn!.call();
       await tester.pumpAndSettle();
 
