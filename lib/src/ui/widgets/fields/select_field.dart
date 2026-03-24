@@ -4,6 +4,8 @@ import 'base_field.dart';
 
 /// Widget for Select field type. Supports single and multi-select (when field.allowMultiple).
 class SelectField extends BaseField {
+  final String? Function(dynamic)? validator;
+
   const SelectField({
     super.key,
     required super.field,
@@ -11,6 +13,7 @@ class SelectField extends BaseField {
     super.onChanged,
     super.enabled,
     super.style,
+    this.validator,
   });
 
   List<String> _getOptions() {
@@ -89,14 +92,9 @@ class SelectField extends BaseField {
         options: options
             .map((opt) => FormBuilderFieldOption(value: opt, child: Text(opt)))
             .toList(),
-        validator: field.reqd
-            ? (value) {
-                if (value == null || value.isEmpty) {
-                  return '${field.displayLabel} is required';
-                }
-                return null;
-              }
-            : null,
+        validator: (value) => validator?.call(
+          value == null || value.isEmpty ? null : value,
+        ),
         onChanged: (val) => onChanged?.call(_listToValue(val)),
       );
     }
@@ -136,14 +134,7 @@ class SelectField extends BaseField {
       items: options.map((option) {
         return DropdownMenuItem<String>(value: option, child: Text(option));
       }).toList(),
-      validator: field.reqd
-          ? (value) {
-              if (value == null || value.toString().isEmpty) {
-                return '${field.displayLabel} is required';
-              }
-              return null;
-            }
-          : null,
+      validator: (value) => validator?.call(value),
       onChanged: (val) => onChanged?.call(val),
     );
   }
