@@ -103,6 +103,20 @@ class FrappeFormBuilder extends StatefulWidget {
   /// Called when a Button field is pressed. [FormScreen] adapts [OnButtonPressedCallback] to this.
   final ButtonPressedCallback? onButtonPressed;
 
+  /// External validator called on every field interaction (after first user interaction).
+  /// Return a non-null String to show an inline error under the field.
+  /// Return null to pass. The SDK has no knowledge of ValidationService.
+  ///
+  /// Parameters:
+  ///   fieldName  — the Frappe fieldname
+  ///   value      — current field value
+  ///   formData   — snapshot of all current form values (for cross-field context)
+  final String? Function(
+    String fieldName,
+    dynamic value,
+    Map<String, dynamic> formData,
+  )? fieldValidator;
+
   const FrappeFormBuilder({
     super.key,
     required this.meta,
@@ -120,6 +134,7 @@ class FrappeFormBuilder extends StatefulWidget {
     this.registerSubmit,
     this.accordionSections = false,
     this.onButtonPressed,
+    this.fieldValidator,
   });
 
   @override
@@ -301,6 +316,35 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
     return DependsOnEvaluator.evaluate(field.readOnlyDependsOn, _formData);
   }
 
+  /// Builds the merged validator for a field.
+  ///
+  /// Receives [fieldWithEffectiveProps] — the field with [reqd] and [readOnly]
+  /// already computed from [mandatoryDependsOn] / [readOnlyDependsOn].
+  ///
+  /// Returns null for readOnly or unnamed fields (no validator needed).
+  String? Function(dynamic)? _buildMergedValidator(DocField field) {
+    if (field.readOnly ||
+        field.fieldname == null ||
+        field.fieldname!.isEmpty) {
+      return null;
+    }
+    return (value) {
+      // 1. reqd check (field.reqd already includes mandatoryDependsOn result)
+      if (field.reqd && (value == null || value.toString().isEmpty)) {
+        return '${field.displayLabel} is required';
+      }
+      // 2. External app-layer callback
+      if (widget.fieldValidator != null) {
+        return widget.fieldValidator!(
+          field.fieldname!,
+          value,
+          Map<String, dynamic>.from(_formData),
+        );
+      }
+      return null;
+    };
+  }
+
   /// Handles fetch_from: when a Link field changes, fetch the linked document
   /// and patch target fields (format: "link_field_name.source_field_name").
   Future<void> _handleFetchFrom(String changedFieldName, dynamic value) async {
@@ -404,6 +448,8 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
         widget.initialData?[field.fieldname] ??
         field.defaultValue;
 
+    final mergedValidator = _buildMergedValidator(fieldWithEffectiveProps);
+
     final fieldWidget = _fieldFactory.createField(
       field: fieldWithEffectiveProps,
       value: initialValue,
@@ -429,6 +475,7 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
                 )
           : null,
       onButtonPressed: widget.onButtonPressed,
+      validator: mergedValidator,
       onChanged: (value) {
         setState(() {
           final oldValue = _formData[field.fieldname];
@@ -723,6 +770,7 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
 
     return FormBuilder(
       key: _formKey,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       child: Column(
         children: [
           if (!widget.accordionSections && _tabs.length > 1)
