@@ -62,6 +62,7 @@ class FieldFactory {
     ChildTableFormBuilder? childTableFormBuilder,
     Future<void> Function(DocField field, Map<String, dynamic> formData)?
         onButtonPressed,
+    String? Function(dynamic)? validator,
   }) {
     if (field.hidden) {
       return null;
@@ -77,6 +78,7 @@ class FieldFactory {
           onChanged: onChanged,
           enabled: enabled,
           style: fieldStyle,
+          validator: validator,
         );
 
       case FieldTypes.phone:
@@ -86,6 +88,7 @@ class FieldFactory {
           onChanged: onChanged,
           enabled: enabled,
           style: fieldStyle,
+          validator: validator,
         );
 
       case FieldTypes.text:
@@ -97,6 +100,7 @@ class FieldFactory {
           onChanged: onChanged,
           enabled: enabled,
           style: fieldStyle,
+          validator: validator,
         );
 
       case FieldTypes.select:
@@ -107,6 +111,7 @@ class FieldFactory {
           onChanged: onChanged,
           enabled: enabled,
           style: fieldStyle,
+          validator: validator,
         );
 
       case FieldTypes.tableMultiSelect:
@@ -117,6 +122,7 @@ class FieldFactory {
             onChanged: onChanged,
             enabled: enabled,
             style: fieldStyle,
+            validator: validator,
           );
         }
         return TableMultiSelectField(
@@ -127,6 +133,7 @@ class FieldFactory {
           style: fieldStyle,
           getMeta: getMeta,
           linkOptionService: linkOptionService!,
+          validator: validator,
         );
 
       case FieldTypes.date:
@@ -136,6 +143,7 @@ class FieldFactory {
           onChanged: onChanged,
           enabled: enabled,
           style: fieldStyle,
+          validator: validator,
         );
 
       case FieldTypes.datetime:
@@ -145,6 +153,7 @@ class FieldFactory {
           onChanged: onChanged,
           enabled: enabled,
           style: fieldStyle,
+          validator: validator,
         );
 
       case FieldTypes.time:
@@ -154,6 +163,7 @@ class FieldFactory {
           onChanged: onChanged,
           enabled: enabled,
           style: fieldStyle,
+          validator: validator,
         );
 
       case FieldTypes.check:
@@ -163,6 +173,7 @@ class FieldFactory {
           onChanged: onChanged,
           enabled: enabled,
           style: fieldStyle,
+          validator: validator,
         );
 
       case FieldTypes.float:
@@ -175,6 +186,7 @@ class FieldFactory {
           onChanged: onChanged,
           enabled: enabled,
           style: fieldStyle,
+          validator: validator,
         );
 
       case FieldTypes.link:
@@ -187,6 +199,7 @@ class FieldFactory {
           options: linkOptions,
           formData: formData,
           style: fieldStyle,
+          validator: validator,
         );
 
       case 'Table':
@@ -211,6 +224,7 @@ class FieldFactory {
           onChanged: onChanged,
           enabled: enabled,
           style: fieldStyle,
+          validator: validator,
         );
 
       case 'Password':
@@ -220,6 +234,7 @@ class FieldFactory {
           onChanged: onChanged,
           enabled: enabled,
           style: fieldStyle,
+          validator: validator,
         );
 
       case 'Rating':
@@ -229,6 +244,7 @@ class FieldFactory {
           onChanged: onChanged,
           enabled: enabled,
           style: fieldStyle,
+          validator: validator,
         );
 
       case 'Read Only':
@@ -248,6 +264,7 @@ class FieldFactory {
           enabled: enabled,
           style: fieldStyle,
           uploadFile: uploadFile,
+          validator: validator,
         );
 
       case FieldTypes.attachImage:
@@ -261,6 +278,7 @@ class FieldFactory {
           uploadFile: uploadFile,
           fileUrlBase: fileUrlBase,
           imageHeaders: imageHeaders,
+          validator: validator,
         );
 
       case FieldTypes.button:
@@ -279,6 +297,7 @@ class FieldFactory {
           value: value?.toString() ?? field.defaultValue ?? '',
           onChanged: null,
           enabled: false,
+          validator: null,
         );
     }
   }
