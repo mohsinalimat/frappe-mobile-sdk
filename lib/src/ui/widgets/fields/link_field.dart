@@ -9,6 +9,7 @@ class LinkField extends BaseField {
   final LinkOptionService? linkOptionService;
   final List<String>? options;
   final Map<String, dynamic>? formData;
+  final String? Function(dynamic)? validator;
 
   const LinkField({
     super.key,
@@ -20,6 +21,7 @@ class LinkField extends BaseField {
     this.linkOptionService,
     this.options,
     this.formData,
+    this.validator,
   });
 
   @override
@@ -65,14 +67,7 @@ class LinkField extends BaseField {
               (option) => DropdownMenuItem(value: option, child: Text(option)),
             )
             .toList(),
-        validator: field.reqd
-            ? (value) {
-                if (value == null || value.toString().isEmpty) {
-                  return '${field.displayLabel} is required';
-                }
-                return null;
-              }
-            : null,
+        validator: (value) => validator?.call(value),
         onChanged: (val) => onChanged?.call(val),
       );
     }
@@ -91,6 +86,7 @@ class LinkField extends BaseField {
         linkFilters: field.linkFilters,
         formData: formData ?? {},
         style: style,
+        validator: validator,
       );
     }
 
@@ -107,14 +103,7 @@ class LinkField extends BaseField {
         fillColor: field.readOnly ? Colors.grey[200] : null,
         suffixIcon: const Icon(Icons.search),
       ),
-      validator: field.reqd
-          ? (value) {
-              if (value == null || value.toString().isEmpty) {
-                return '${field.displayLabel} is required';
-              }
-              return null;
-            }
-          : null,
+      validator: (value) => validator?.call(value),
       onChanged: (val) => onChanged?.call(val),
     );
   }
@@ -131,6 +120,7 @@ class _LinkFieldDropdown extends StatefulWidget {
   final String? linkFilters;
   final Map<String, dynamic> formData;
   final FieldStyle? style;
+  final String? Function(dynamic)? validator;
 
   const _LinkFieldDropdown({
     required this.field,
@@ -142,6 +132,7 @@ class _LinkFieldDropdown extends StatefulWidget {
     this.linkFilters,
     required this.formData,
     this.style,
+    this.validator,
   });
 
   @override
@@ -388,16 +379,11 @@ class _LinkFieldDropdownState extends State<_LinkFieldDropdown> {
             ),
           ),
       items: allItems,
-      validator: widget.field.reqd
-          ? (value) {
-              if (value == null ||
-                  value.toString().isEmpty ||
-                  value == _kBlankValue) {
-                return '${widget.field.displayLabel} is required';
-              }
-              return null;
-            }
-          : null,
+      validator: (value) => widget.validator?.call(
+        (value == null || value.toString().isEmpty || value == _kBlankValue)
+            ? null
+            : value,
+      ),
       onChanged: (val) =>
           widget.onChanged?.call(val == _kBlankValue ? null : val),
     );
