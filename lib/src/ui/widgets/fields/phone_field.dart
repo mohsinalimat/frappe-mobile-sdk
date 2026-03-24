@@ -7,6 +7,8 @@ const String _defaultDialCode = '+91';
 
 /// Widget for Phone field type. Uses fixed +91 prefix; user enters mobile number only.
 class PhoneField extends BaseField {
+  final String? Function(dynamic)? validator;
+
   const PhoneField({
     super.key,
     required super.field,
@@ -14,6 +16,7 @@ class PhoneField extends BaseField {
     super.onChanged,
     super.enabled,
     super.style,
+    this.validator,
   });
 
   /// Full stored value is dialCode + digits (e.g. +919876543210)
@@ -68,26 +71,21 @@ class PhoneField extends BaseField {
       maxLength: (field.length != null && field.length! > 0)
           ? field.length
           : 10,
-      validator: field.reqd
-          ? (value) {
-              if (value == null || value.toString().trim().isEmpty) {
-                return '${field.displayLabel} is required';
-              }
-              final digits = _digitsOnly(value);
-              if (digits.length < 10) {
-                return 'Please enter a valid 10-digit mobile number';
-              }
-              return null;
-            }
-          : (value) {
-              if (value != null && value.toString().trim().isNotEmpty) {
-                final digits = _digitsOnly(value);
-                if (digits.length < 10) {
-                  return 'Please enter a valid 10-digit mobile number';
-                }
-              }
-              return null;
-            },
+      validator: (value) {
+        // Required field check
+        if (field.reqd && (value == null || value.toString().trim().isEmpty)) {
+          return '${field.displayLabel} is required';
+        }
+        // Phone format check
+        if (value != null && value.toString().trim().isNotEmpty) {
+          final digits = _digitsOnly(value);
+          if (digits.length < 10) {
+            return 'Please enter a valid 10-digit mobile number';
+          }
+        }
+        // Merged validator: reqd + external
+        return validator?.call(value);
+      },
       onChanged: (val) {
         final storedValue = toStored(val ?? '');
         onChanged?.call(storedValue.isEmpty ? null : storedValue);
