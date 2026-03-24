@@ -4,6 +4,8 @@ import 'base_field.dart';
 
 /// Widget for numeric field types (Int, Float, Currency, Percent)
 class NumericField extends BaseField {
+  final String? Function(dynamic)? validator;
+
   const NumericField({
     super.key,
     required super.field,
@@ -11,6 +13,7 @@ class NumericField extends BaseField {
     super.onChanged,
     super.enabled,
     super.style,
+    this.validator,
   });
 
   @override
@@ -35,20 +38,19 @@ class NumericField extends BaseField {
             prefixText: isCurrency ? '₹ ' : null,
             suffixText: isPercent ? '%' : null,
           ),
-      validator: field.reqd
-          ? (value) {
-              if (value == null || value.toString().isEmpty) {
-                return '${field.displayLabel} is required';
-              }
-              final numValue = isInt
-                  ? int.tryParse(value)
-                  : double.tryParse(value);
-              if (numValue == null) {
-                return 'Please enter a valid number';
-              }
-              return null;
-            }
-          : null,
+      validator: (value) {
+        // Format check: must be a valid number if provided
+        if (value != null && value.toString().isNotEmpty) {
+          final numValue = isInt
+              ? int.tryParse(value.toString())
+              : double.tryParse(value.toString());
+          if (numValue == null) {
+            return 'Please enter a valid number';
+          }
+        }
+        // Merged validator: reqd + external
+        return validator?.call(value);
+      },
       onChanged: (val) {
         if (val != null && val.isNotEmpty) {
           final numValue = isInt ? int.tryParse(val) : double.tryParse(val);
