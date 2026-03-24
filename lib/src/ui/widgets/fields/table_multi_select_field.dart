@@ -18,6 +18,7 @@ import 'base_field.dart';
 class TableMultiSelectField extends BaseField {
   final Future<DocTypeMeta> Function(String doctype) getMeta;
   final LinkOptionService linkOptionService;
+  final String? Function(dynamic)? validator;
 
   const TableMultiSelectField({
     super.key,
@@ -28,6 +29,7 @@ class TableMultiSelectField extends BaseField {
     super.style,
     required this.getMeta,
     required this.linkOptionService,
+    this.validator,
   });
 
   @override
@@ -40,6 +42,7 @@ class TableMultiSelectField extends BaseField {
       style: style,
       getMeta: getMeta,
       linkOptionService: linkOptionService,
+      validator: validator,
     );
   }
 }
@@ -52,6 +55,7 @@ class _TableMultiSelectBody extends StatefulWidget {
   final FieldStyle? style;
   final Future<DocTypeMeta> Function(String doctype) getMeta;
   final LinkOptionService linkOptionService;
+  final String? Function(dynamic)? validator;
 
   const _TableMultiSelectBody({
     required this.field,
@@ -61,6 +65,7 @@ class _TableMultiSelectBody extends StatefulWidget {
     this.style,
     required this.getMeta,
     required this.linkOptionService,
+    this.validator,
   });
 
   @override
@@ -201,14 +206,7 @@ class _TableMultiSelectBodyState extends State<_TableMultiSelectBody> {
                 child: Text(opt.label ?? opt.name),
               ))
           .toList(),
-      validator: widget.field.reqd
-          ? (value) {
-              if (value == null || value.isEmpty) {
-                return '${widget.field.displayLabel} is required';
-              }
-              return null;
-            }
-          : null,
+      validator: (value) => widget.validator?.call(value),
       onChanged: (val) {
         widget.onChanged?.call(_toChildTableRows(val));
       },
