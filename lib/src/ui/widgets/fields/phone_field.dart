@@ -72,10 +72,6 @@ class PhoneField extends BaseField {
           ? field.length
           : 10,
       validator: (value) {
-        // Required field check
-        if (field.reqd && (value == null || value.toString().trim().isEmpty)) {
-          return '${field.displayLabel} is required';
-        }
         // Phone format check
         if (value != null && value.toString().trim().isNotEmpty) {
           final digits = _digitsOnly(value);

@@ -271,6 +271,7 @@ class _LinkFieldDropdownState extends State<_LinkFieldDropdown> {
               child: Text(loadingValue),
             ),
         ],
+        validator: (value) => widget.validator?.call(value == _kBlankValue ? null : value),
       );
     }
 
@@ -303,6 +304,7 @@ class _LinkFieldDropdownState extends State<_LinkFieldDropdown> {
             child: Text(hint, style: TextStyle(color: Colors.grey[600])),
           ),
         ],
+        validator: (value) => widget.validator?.call(value == _kBlankValue ? null : value),
         onChanged: isWaiting
             ? null
             : (v) => widget.onChanged?.call(v == _kBlankValue ? null : v),

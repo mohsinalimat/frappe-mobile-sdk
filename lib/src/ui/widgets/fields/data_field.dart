@@ -54,10 +54,6 @@ class DataField extends BaseField {
           ? field.length
           : null,
       validator: (value) {
-        // Required field check
-        if (field.reqd && (value == null || value.toString().isEmpty)) {
-          return '${field.displayLabel} is required';
-        }
         // Phone format check (stays in widget — SDK owns format validation)
         if (isPhone && value != null && value.isNotEmpty) {
           final trimmed = value.trim();

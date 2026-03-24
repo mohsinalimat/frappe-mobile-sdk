@@ -39,7 +39,6 @@ class CheckField extends BaseField {
       initialValue: initialValue,
       enabled: enabled && !field.readOnly,
       title: Text(field.placeholder ?? field.displayLabel),
-      validator: validator != null ? (val) => validator!(val) : null,
       onChanged: (val) {
         if (val != null) {
           onChanged?.call(val ? 1 : 0);
