@@ -19,15 +19,49 @@ class DependsOnEvaluator {
     // unspaced (===) variants, e.g. Frappe depends_on: eval:doc.field === 'Other'.
     expr = expr.replaceAll('!==', ' != ').replaceAll('===', ' == ');
 
-    // Simple evaluation for common patterns
-    // eval:doc.field == value
-    // eval:doc.field != value
-    // eval:doc.field > value
-    // eval:doc.field < value
-    // eval:doc.field >= value
-    // eval:doc.field <= value
-
     try {
+      // Handle && (AND) operator — MUST be checked before simple operators so
+      // compound expressions like "doc.a == 'X' && doc.b > 0" are split first.
+      if (expr.contains(' && ')) {
+        final parts = expr.split(' && ');
+        return parts.every((part) => evaluate(part.trim(), formData));
+      }
+
+      // Handle || (OR) operator — same priority reason as &&.
+      if (expr.contains(' || ')) {
+        final parts = expr.split(' || ');
+        return parts.any((part) => evaluate(part.trim(), formData));
+      }
+
+      // Handle Array.some() pattern:
+      // (doc.FIELD||[]).some(r=>r.CHILD_FIELD == 'VALUE')
+      final someMatch = RegExp(
+        r'^\(doc\.(\w+)\|\|\[\]\)\.some\(r=>r\.(\w+)\s*==\s*[\'"](.+?)[\'"]\)$',
+      ).firstMatch(expr);
+      if (someMatch != null) {
+        final fieldName = someMatch.group(1)!;
+        final childField = someMatch.group(2)!;
+        final targetValue = someMatch.group(3)!;
+        final fieldValue = formData[fieldName];
+        if (fieldValue is List) {
+          return fieldValue.any((item) {
+            if (item is Map) {
+              return item[childField]?.toString() == targetValue;
+            }
+            return false;
+          });
+        }
+        return false;
+      }
+
+      // Simple evaluation for common patterns
+      // eval:doc.field == value
+      // eval:doc.field != value
+      // eval:doc.field > value
+      // eval:doc.field < value
+      // eval:doc.field >= value
+      // eval:doc.field <= value
+
       // Handle == comparison
       if (expr.contains(' == ')) {
         final parts = expr.split(' == ');
@@ -47,6 +81,28 @@ class DependsOnEvaluator {
           final expectedValue = _extractValue(parts[1]);
           final actualValue = formData[fieldName];
           return _compareValues(actualValue, expectedValue, '!=');
+        }
+      }
+
+      // Handle >= comparison (before > to avoid partial match)
+      if (expr.contains(' >= ')) {
+        final parts = expr.split(' >= ');
+        if (parts.length == 2) {
+          final fieldName = _extractFieldName(parts[0]);
+          final expectedValue = _extractValue(parts[1]);
+          final actualValue = formData[fieldName];
+          return _compareValues(actualValue, expectedValue, '>=');
+        }
+      }
+
+      // Handle <= comparison (before < to avoid partial match)
+      if (expr.contains(' <= ')) {
+        final parts = expr.split(' <= ');
+        if (parts.length == 2) {
+          final fieldName = _extractFieldName(parts[0]);
+          final expectedValue = _extractValue(parts[1]);
+          final actualValue = formData[fieldName];
+          return _compareValues(actualValue, expectedValue, '<=');
         }
       }
 
@@ -70,40 +126,6 @@ class DependsOnEvaluator {
           final actualValue = formData[fieldName];
           return _compareValues(actualValue, expectedValue, '<');
         }
-      }
-
-      // Handle >= comparison
-      if (expr.contains(' >= ')) {
-        final parts = expr.split(' >= ');
-        if (parts.length == 2) {
-          final fieldName = _extractFieldName(parts[0]);
-          final expectedValue = _extractValue(parts[1]);
-          final actualValue = formData[fieldName];
-          return _compareValues(actualValue, expectedValue, '>=');
-        }
-      }
-
-      // Handle <= comparison
-      if (expr.contains(' <= ')) {
-        final parts = expr.split(' <= ');
-        if (parts.length == 2) {
-          final fieldName = _extractFieldName(parts[0]);
-          final expectedValue = _extractValue(parts[1]);
-          final actualValue = formData[fieldName];
-          return _compareValues(actualValue, expectedValue, '<=');
-        }
-      }
-
-      // Handle && (AND) operator
-      if (expr.contains(' && ')) {
-        final parts = expr.split(' && ');
-        return parts.every((part) => evaluate(part.trim(), formData));
-      }
-
-      // Handle || (OR) operator
-      if (expr.contains(' || ')) {
-        final parts = expr.split(' || ');
-        return parts.any((part) => evaluate(part.trim(), formData));
       }
 
       // Default: check if field exists and is truthy
