@@ -770,7 +770,6 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
 
     return FormBuilder(
       key: _formKey,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
       child: Column(
         children: [
           if (!widget.accordionSections && _tabs.length > 1)

@@ -31,6 +31,7 @@ class AttachField extends BaseField {
     return FormBuilderField<String>(
       key: ValueKey('attach_${field.fieldname}'),
       name: field.fieldname ?? '',
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       initialValue: filePath,
       enabled: enabled && !field.readOnly,
       validator: (value) => validator?.call(value),

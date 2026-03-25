@@ -192,6 +192,7 @@ class _TableMultiSelectBodyState extends State<_TableMultiSelectBody> {
     return FormBuilderCheckboxGroup<String>(
       key: ValueKey('${widget.field.fieldname}_tms_${_options.length}'),
       name: widget.field.fieldname ?? '',
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       initialValue: validInitial,
       enabled: widget.enabled && !widget.field.readOnly,
       decoration: widget.style?.decoration ??

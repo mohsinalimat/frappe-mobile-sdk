@@ -99,6 +99,7 @@ class ImageField extends BaseField {
     return FormBuilderField<String>(
       key: ValueKey('image_${field.fieldname}'),
       name: field.fieldname ?? '',
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       initialValue: imagePath,
       enabled: enabled && !field.readOnly,
       validator: (value) => validator?.call(value),

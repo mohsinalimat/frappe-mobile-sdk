@@ -31,6 +31,7 @@ class DateField extends BaseField {
     return FormBuilderDateTimePicker(
       key: ValueKey('date_${field.fieldname}'),
       name: field.fieldname ?? '',
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       initialValue: initialDate,
       enabled: enabled && !field.readOnly,
       inputType: InputType.date,

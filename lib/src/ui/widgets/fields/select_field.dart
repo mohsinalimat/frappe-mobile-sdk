@@ -79,6 +79,7 @@ class SelectField extends BaseField {
       return FormBuilderCheckboxGroup<String>(
         key: ValueKey('${field.fieldname}_multi_${options.length}'),
         name: field.fieldname ?? '',
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         initialValue: displayList,
         enabled: enabled && !field.readOnly,
         decoration:
@@ -121,6 +122,7 @@ class SelectField extends BaseField {
     return FormBuilderDropdown<String>(
       key: ValueKey('select_${field.fieldname}_${options.length}'),
       name: field.fieldname ?? '',
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       initialValue: validInitialValue,
       enabled: enabled && !field.readOnly,
       decoration:

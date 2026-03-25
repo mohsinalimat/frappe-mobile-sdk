@@ -35,6 +35,7 @@ class DataField extends BaseField {
     return FormBuilderTextField(
       key: ValueKey('data_${field.fieldname}'),
       name: field.fieldname ?? '',
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       initialValue: initialValue,
       enabled: enabled && !field.readOnly,
       keyboardType: isPhone ? TextInputType.phone : TextInputType.text,

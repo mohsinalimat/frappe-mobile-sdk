@@ -52,6 +52,7 @@ class LinkField extends BaseField {
       return FormBuilderDropdown<String>(
         key: ValueKey('link_${field.fieldname}_${options!.length}'),
         name: field.fieldname ?? '',
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         initialValue: validInitialValue,
         enabled: enabled && !field.readOnly,
         decoration:
@@ -94,6 +95,7 @@ class LinkField extends BaseField {
     return FormBuilderTextField(
       key: ValueKey('link_text_${field.fieldname}'),
       name: field.fieldname ?? '',
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       initialValue: value?.toString() ?? field.defaultValue ?? '',
       enabled: enabled && !field.readOnly,
       decoration: InputDecoration(
@@ -365,6 +367,7 @@ class _LinkFieldDropdownState extends State<_LinkFieldDropdown> {
         'link_dropdown_${widget.field.fieldname}_${_options.length}',
       ),
       name: widget.field.fieldname ?? '',
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       initialValue: initialVal,
       enabled: widget.enabled && !widget.field.readOnly,
       decoration:

@@ -44,6 +44,7 @@ class RatingField extends BaseField {
     return FormBuilderField<int>(
       key: ValueKey('rating_${field.fieldname}'),
       name: field.fieldname ?? '',
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       initialValue: initialRating,
       enabled: enabled && !field.readOnly,
       validator: (value) => validator?.call(value),

@@ -53,6 +53,7 @@ class PhoneField extends BaseField {
     return FormBuilderTextField(
       key: ValueKey('phone_${field.fieldname}'),
       name: field.fieldname ?? '',
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       initialValue: numberPart,
       enabled: enabled && !field.readOnly,
       keyboardType: TextInputType.phone,

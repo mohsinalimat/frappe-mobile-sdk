@@ -24,6 +24,7 @@ class PasswordField extends BaseField {
     return FormBuilderTextField(
       key: ValueKey('password_${field.fieldname}'),
       name: field.fieldname ?? '',
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       initialValue: value?.toString() ?? field.defaultValue ?? '',
       enabled: enabled && !field.readOnly,
       obscureText: true,
