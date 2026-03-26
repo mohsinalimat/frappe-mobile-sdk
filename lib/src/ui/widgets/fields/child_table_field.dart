@@ -43,9 +43,30 @@ class ChildTableField extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-              child: Text(
-                field.label ?? field.fieldname ?? 'Table',
-                style: Theme.of(context).textTheme.titleMedium,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    field.label ?? field.fieldname ?? 'Table',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  if (listValue.isNotEmpty) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${listValue.length}',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
             if (enabled && !field.readOnly && onChanged != null)
