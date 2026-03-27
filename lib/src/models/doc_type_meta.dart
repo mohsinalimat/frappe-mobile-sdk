@@ -1,4 +1,5 @@
 import 'doc_field.dart';
+import '../utils/client_script_parser.dart';
 
 /// Represents Frappe DocType metadata
 class DocTypeMeta {
@@ -17,6 +18,9 @@ class DocTypeMeta {
   /// Default sort order: 'asc' or 'desc' (from Frappe sort_order)
   final String? sortOrder;
 
+  /// Raw client script (__js) from DocType meta — used for auto-calc parsing.
+  final String? clientScript;
+
   DocTypeMeta({
     required this.name,
     this.label,
@@ -26,6 +30,7 @@ class DocTypeMeta {
     this.titleField,
     this.sortField,
     this.sortOrder,
+    this.clientScript,
   });
 
   factory DocTypeMeta.fromJson(Map<String, dynamic> json) {
@@ -60,6 +65,7 @@ class DocTypeMeta {
     final titleField = json['title_field'] as String?;
     final sortField = json['sort_field'] as String?;
     final sortOrder = json['sort_order'] as String?;
+    final clientScript = json['__js'] as String?;
 
     return DocTypeMeta(
       name: json['name'] as String? ?? json['doctype'] as String? ?? '',
@@ -72,6 +78,7 @@ class DocTypeMeta {
       sortOrder: sortOrder?.toLowerCase() == 'desc'
           ? 'desc'
           : (sortOrder?.isNotEmpty == true ? 'asc' : null),
+      clientScript: clientScript?.isNotEmpty == true ? clientScript : null,
     );
   }
 
@@ -85,6 +92,7 @@ class DocTypeMeta {
       if (titleField != null) 'title_field': titleField,
       if (sortField != null) 'sort_field': sortField,
       if (sortOrder != null) 'sort_order': sortOrder,
+      if (clientScript != null) '__js': clientScript,
     };
   }
 
@@ -151,6 +159,10 @@ class DocTypeMeta {
         .toList()
       ..sort((a, b) => (a.idx ?? 0).compareTo(b.idx ?? 0));
   }
+
+  /// Returns fieldnames that are auto-calc targets (written by client script set_value).
+  /// Used by app layer to keep these read-only fields visible on the form.
+  Set<String> get autoCalcTargets => ClientScriptParser.targetFieldnames(clientScript);
 
   /// Get all layout fields
   List<DocField> get layoutFields {

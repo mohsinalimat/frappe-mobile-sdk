@@ -6,6 +6,8 @@ import '../../models/doc_field.dart';
 import '../../constants/field_types.dart';
 import '../../services/link_option_service.dart';
 import '../../utils/depends_on_evaluator.dart';
+import '../../utils/client_script_parser.dart';
+import '../../utils/arithmetic_evaluator.dart';
 import 'fields/field_factory.dart';
 import 'fields/base_field.dart';
 import 'default_form_style.dart';
@@ -168,6 +170,7 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
   late TabController _tabController;
   final List<_FormTab> _tabs = [];
   final Map<String, int> _fieldTabIndex = {};
+  late final Map<String, List<CalcRule>> _calcTriggerMap;
 
   @override
   void initState() {
@@ -188,6 +191,7 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
     }
 
     _buildFormStructure();
+    _calcTriggerMap = ClientScriptParser.parse(widget.meta.clientScript);
     _tabController = TabController(
       length: _tabs.isEmpty ? 1 : _tabs.length,
       vsync: this,
@@ -531,6 +535,17 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
               value != null &&
               value.toString().trim().isNotEmpty) {
             _handleFetchFrom(field.fieldname!, value);
+          }
+
+          // Auto-calc: evaluate client-script expressions when trigger field changes
+          if (field.fieldname != null && _calcTriggerMap.containsKey(field.fieldname)) {
+            for (final rule in _calcTriggerMap[field.fieldname]!) {
+              final result = ArithmeticEvaluator.evaluate(rule.expression, _formData);
+              _formData[rule.targetField] = result;
+              _formKey.currentState?.patchValue({
+                rule.targetField: result % 1 == 0 ? result.toInt().toString() : result.toStringAsFixed(2),
+              });
+            }
           }
 
           // Trigger rebuild to update dependent fields

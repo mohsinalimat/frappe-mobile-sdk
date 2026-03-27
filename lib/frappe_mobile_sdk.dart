@@ -81,3 +81,5 @@ export 'src/constants/oauth_constants.dart';
 // Utils (debug tracer + user-friendly errors)
 export 'src/api/utils.dart' show extractErrorMessage, toUserFriendlyMessage;
 export 'src/utils/api_tracer.dart' show ApiTracer;
+export 'src/utils/arithmetic_evaluator.dart';
+export 'src/utils/client_script_parser.dart';
