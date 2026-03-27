@@ -36,7 +36,7 @@ class DependsOnEvaluator {
       // Handle Array.some() pattern:
       // (doc.FIELD||[]).some(r=>r.CHILD_FIELD == 'VALUE')
       final someMatch = RegExp(
-        r'^\(doc\.(\w+)\|\|\[\]\)\.some\(r=>r\.(\w+)\s*==\s*[\'"](.+?)[\'"]\)$',
+        r"""^\(doc\.(\w+)\|\|\[\]\)\.some\(r=>r\.(\w+)\s*==\s*['"](.+?)['"]\)$""",
       ).firstMatch(expr);
       if (someMatch != null) {
         final fieldName = someMatch.group(1)!;
