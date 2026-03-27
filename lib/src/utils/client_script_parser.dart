@@ -51,9 +51,11 @@ class ClientScriptParser {
     r'(\w+)\s*(?:\(frm\)|:\s*function\s*\(frm\))\s*\{',
   );
 
-  // Matches: frm.set_value('target', expression)  or  frm.set_value("target", expression)
+  // Matches: frm.set_value('target', expression);
+  // Uses ); as the terminator (not just )) to avoid truncating expressions
+  // with nested parentheses like (frm.doc.a * 100000) / (frm.doc.b || 1)
   static final _setValueRe = RegExp(
-    r'''frm\.set_value\(\s*['"](\w+)['"]\s*,\s*(.+?)\s*\)''',
+    r'''frm\.set_value\(\s*['"](\w+)['"]\s*,\s*(.+?)\s*\)\s*;''',
   );
 
   // Matches: var x = expression;  or  let x = expression;  or  const x = expression;
