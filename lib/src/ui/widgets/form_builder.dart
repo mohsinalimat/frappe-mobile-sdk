@@ -401,7 +401,22 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
       setState(() {
         _formData.addAll(updates);
       });
-      _formKey.currentState?.patchValue(updates);
+
+      // patchValue needs DateTime? for Date/Datetime fields (FormBuilderDateTimePicker
+      // rejects String), and String for numeric fields. Convert accordingly.
+      final patchUpdates = <String, dynamic>{};
+      for (final targetField in fieldsToUpdate) {
+        final fn = targetField.fieldname;
+        if (fn == null || !updates.containsKey(fn)) continue;
+        final raw = updates[fn];
+        if (raw is String &&
+            (targetField.fieldtype == 'Date' || targetField.fieldtype == 'Datetime')) {
+          patchUpdates[fn] = DateTime.tryParse(raw);
+        } else {
+          patchUpdates[fn] = raw;
+        }
+      }
+      _formKey.currentState?.patchValue(patchUpdates);
       if (mounted) setState(() {});
     } catch (e) {
       debugPrint('FetchFrom error: $e');
