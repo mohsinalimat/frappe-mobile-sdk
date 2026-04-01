@@ -186,7 +186,11 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
       if (field.fieldname != null &&
           !field.hidden &&
           !_formData.containsKey(field.fieldname)) {
-        _formData[field.fieldname!] ??= field.defaultValue;
+        final def = field.defaultValue;
+        // Skip zero defaults ("0", "0.0") — they show as "0.0" in
+        // skip-logic fields when they first become visible.
+        if (def == '0' || def == '0.0') continue;
+        _formData[field.fieldname!] ??= def;
       }
     }
 
@@ -491,6 +495,7 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
                   style: widget.style,
                   customFieldFactory: widget.customFieldFactory,
                   linkOptionService: widget.linkOptionService,
+                  fieldValidator: widget.fieldValidator,
                 )
           : null,
       onButtonPressed: widget.onButtonPressed,
@@ -512,18 +517,12 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
           if (field.fieldname != null && oldValue != value) {
             // Date/Datetime fields: onChanged emits an ISO String, but
             // FormBuilderDateTimePicker.didChange expects DateTime?.
-            // Parse back to DateTime so patchValue doesn't throw a TypeError
-            // that prevents the text field from being populated.
             dynamic patchVal = value ?? '';
             if (value is String &&
                 (field.fieldtype == 'Date' ||
                     field.fieldtype == 'Datetime')) {
               patchVal = DateTime.tryParse(value);
             } else if (value is num) {
-              // NumericField.onChanged emits an int/double, but
-              // FormBuilderTextField.patchValue expects String?.
-              // Convert to String to prevent TypeError inside setState
-              // that would abort the rebuild and break depends_on visibility.
               patchVal = value.toString();
             }
             _formKey.currentState?.patchValue({

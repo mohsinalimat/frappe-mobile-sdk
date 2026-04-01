@@ -20,8 +20,15 @@ class DataField extends BaseField {
   Widget buildField(BuildContext context) {
     final isPhone = field.fieldtype == 'Phone';
 
-    // Ensure phone values start with + (required by Frappe)
-    String? initialValue = value?.toString() ?? field.defaultValue ?? '';
+    // Treat zero values as blank — prevents skip-logic Data fields from
+    // showing "0" or "0.0" when they first become visible.
+    String? initialValue;
+    if (value == null) {
+      initialValue = field.defaultValue ?? '';
+    } else {
+      final s = value.toString();
+      initialValue = (s == '0' || s == '0.0') ? '' : s;
+    }
     if (isPhone && initialValue.isNotEmpty && !initialValue.startsWith('+')) {
       initialValue = '+$initialValue';
     }

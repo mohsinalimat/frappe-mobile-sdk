@@ -40,15 +40,6 @@ class LinkField extends BaseField {
         }
       }
 
-      // Auto-select when exactly one option and no valid selection
-      if (options!.length == 1 &&
-          (validInitialValue == null || validInitialValue.isEmpty)) {
-        validInitialValue = options!.first;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          onChanged?.call(options!.first);
-        });
-      }
-
       return FormBuilderDropdown<String>(
         key: ValueKey('link_${field.fieldname}_${options!.length}'),
         name: field.fieldname ?? '',

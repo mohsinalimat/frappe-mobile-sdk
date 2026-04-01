@@ -117,7 +117,8 @@ class _MultiImageBodyState extends State<_MultiImageBody> {
 
     setState(() => _uploading = true);
     final newUrls = <String>[];
-    for (final xfile in results) {
+    // Enforce limit — Android's pickMultiImage(limit:) is unreliable.
+    for (final xfile in results.take(remaining)) {
       final file = File(xfile.path);
       if (widget.uploadFile != null) {
         try {

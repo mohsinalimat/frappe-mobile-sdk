@@ -105,8 +105,13 @@ class ClientScriptParser {
         rules.add(CalcRule(targetField: target, expression: expression));
       }
 
-      if (rules.isNotEmpty) {
-        result.putIfAbsent(fieldname, () => []).addAll(rules);
+      // Skip self-referencing rules (target == trigger) — these are
+      // formatting/cascade scripts (e.g. toUpperCase) that the SDK's
+      // ArithmeticEvaluator can't handle. They produce 0.0 and corrupt
+      // the field value.
+      final validRules = rules.where((r) => r.targetField != fieldname).toList();
+      if (validRules.isNotEmpty) {
+        result.putIfAbsent(fieldname, () => []).addAll(validRules);
       }
     }
 

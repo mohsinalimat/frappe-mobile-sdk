@@ -22,11 +22,25 @@ class NumericField extends BaseField {
     final isCurrency = field.fieldtype == 'Currency';
     final isPercent = field.fieldtype == 'Percent';
 
+    // Treat zero as blank when no explicit non-zero default was set.
+    final hasExplicitDefault = field.defaultValue != null &&
+        field.defaultValue!.isNotEmpty &&
+        field.defaultValue != '0' &&
+        field.defaultValue != '0.0';
+    String initVal;
+    if (value == null) {
+      initVal = hasExplicitDefault ? field.defaultValue! : '';
+    } else {
+      final strVal = value.toString();
+      final isZero = value == 0 || value == 0.0 || strVal == '0' || strVal == '0.0';
+      initVal = (isZero && !hasExplicitDefault) ? '' : strVal;
+    }
+
     return FormBuilderTextField(
       key: ValueKey('numeric_${field.fieldname}'),
       name: field.fieldname ?? '',
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      initialValue: value?.toString() ?? field.defaultValue ?? '',
+      initialValue: initVal,
       enabled: enabled && !field.readOnly,
       keyboardType: TextInputType.numberWithOptions(decimal: !isInt),
       decoration:
