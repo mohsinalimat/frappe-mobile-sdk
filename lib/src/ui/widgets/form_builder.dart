@@ -578,6 +578,7 @@ class _FrappeFormBuilderState extends State<FrappeFormBuilder>
     if (fieldWidget == null) return const SizedBox.shrink();
 
     return Padding(
+      key: field.fieldname != null ? Key(field.fieldname!) : null,
       padding: formStyle.fieldPadding ?? const EdgeInsets.only(bottom: 16.0),
       child: fieldWidget,
     );
